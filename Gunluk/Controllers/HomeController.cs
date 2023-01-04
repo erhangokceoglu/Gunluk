@@ -7,15 +7,26 @@ namespace Gunluk.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly UygulamaDbContext _db;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, UygulamaDbContext db)
         {
             _logger = logger;
+            _db = db;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? KategoriId)
         {
-            return View();
+            IQueryable<Gonderi> gonderiler = _db.Gonderiler;
+
+            if (KategoriId != null)
+            {
+                gonderiler = gonderiler.Where(x => x.KategoriId == KategoriId);
+                ViewBag.Baslik = _db.Kategoriler.Find(KategoriId)?.Ad;
+
+            }
+
+            return View(gonderiler.ToList());
         }
 
         public IActionResult Privacy()
