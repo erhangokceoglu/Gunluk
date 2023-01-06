@@ -14,7 +14,7 @@ namespace Gunluk.DATA
         public string? Icerik { get; set; } = null!;
 
         [MaxLength(255)]
-        public string? Resim { get; set; }
+        public string? Resim { get; set; } = "";
 
         public DateTime OlusturulmaZamani { get; set; } = DateTime.Now;
 
