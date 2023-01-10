@@ -13,7 +13,7 @@ namespace Gunluk.Areas.Admin.Models
         public string Baslik { get; set; } = null!;
 
         [Display(Name = "İçerik")]
-        public string? Icerik { get; set; } = null!;
+        public string? Icerik { get; set; } = "";
 
 
         [Display(Name = "Kategori")]

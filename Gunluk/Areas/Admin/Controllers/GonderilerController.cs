@@ -24,6 +24,10 @@ namespace Gunluk.Areas.Admin.Controllers
                 durum == "silindi" ? "Gönderi başarıyla silindi." : null;
             return View(_db.Gonderiler.Include(x => x.Kategori).ToList());
         }
+        private void KategorileriYukle()
+        {
+            ViewBag.Kategoriler = _db.Kategoriler.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Ad });
+        }
 
         public IActionResult Yeni()
         {
@@ -31,10 +35,6 @@ namespace Gunluk.Areas.Admin.Controllers
             return View("Yonet");
         }
 
-        private void KategorileriYukle()
-        {
-            ViewBag.Kategoriler = _db.Kategoriler.Select(x => new SelectListItem() { Value = x.Id.ToString(), Text = x.Ad });
-        }
 
         [HttpPost, ValidateAntiForgeryToken]
         public IActionResult Yeni(GonderiViewModel vm)
@@ -56,7 +56,53 @@ namespace Gunluk.Areas.Admin.Controllers
         }
         public IActionResult Duzenle(int id)
         {
+            var gonderi = _db.Gonderiler.Find(id);
+
+            if (gonderi == null)
+                return NotFound();
+            var vm = new GonderiViewModel()
+            {
+                Id = gonderi.Id,
+                Baslik = gonderi.Baslik,
+                Icerik = gonderi.Icerik,
+                KategoriId = gonderi.KategoriId
+
+            };
+            KategorileriYukle();
+            return View("Yonet", vm);
+        }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult Duzenle(GonderiViewModel vm)
+        {
+            if (ModelState.IsValid)
+            {
+                var gonderi = _db.Gonderiler.Find(vm.Id);
+                if (gonderi == null)
+                    return NotFound();
+                gonderi.Baslik = vm.Baslik;
+                gonderi.Icerik = vm.Icerik;
+                gonderi.DegistirilmeZamani = DateTime.Now;
+                gonderi.KategoriId = vm.KategoriId!.Value;               
+                _db.SaveChanges();
+                return RedirectToAction(nameof(Index), new { durum = "düzenlendi" });
+            }
+            KategorileriYukle();
             return View("Yonet");
         }
+
+        [HttpPost, ValidateAntiForgeryToken]
+        public IActionResult Sil(int id)
+        {
+            var gonderi = _db.Gonderiler.Find(id);
+
+            if (gonderi == null)
+                return NotFound();
+
+            _db.Gonderiler.Remove(gonderi);
+            _db.SaveChanges();
+            return RedirectToAction(nameof(Index), new { durum = "silindi" });
+        }
+
     }
 }

@@ -6,6 +6,10 @@
 }
 
 <form method="post">
+    @if (action == "Duzenle")
+    {
+        <input asp-for="Id" type="hidden" />
+    }
     <div class="mb-3">
         <label asp-for="Baslik" class="form-label"></label>
         <input asp-for="Baslik" type="text" class="form-control" placeholder="Başlık">
@@ -20,7 +24,7 @@
         <label asp-for="KategoriId" class="form-label"></label>
         <select asp-for="KategoriId" asp-items="ViewBag.Kategoriler" class="form-control">
             <option value="">Seçiniz</option>
-        </select>      
+        </select>
         <span asp-validation-for="KategoriId"></span>
     </div>
     <div>
